@@ -6,3 +6,11 @@ order: 4
 
 > Add Markdown syntax content to file `_tabs/about.md`{: .filepath } and it will show up on this page.
 {: .prompt-tip }
+
+I work as a penetration tester with the focus on low level security research. 
+I like to crunch bytes and stare at the debugger.
+
+My penetration testing experience is wide-ranging, covering areas like automotive embedded systems, IoT, hardware pentesting and reverse engineering as well as web, network and SE.
+
+I created this blog to put all my writings and/or posts in one place and I hope you'll find it useful.
+
