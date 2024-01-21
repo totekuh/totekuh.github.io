@@ -12,4 +12,3 @@ I created this blog to put all my writings and/or posts in one place and I hope 
 
 > Looking for the latest in cybersecurity? 🔗 Connect with us on [Telegram](https://t.me/cyberschmutz) to get frequent updates on the latest events, news, and toolsets in the domain.
 {: .prompt-info }
-
