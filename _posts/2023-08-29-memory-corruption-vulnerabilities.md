@@ -1,8 +1,9 @@
 ---
-title: Memory Corruption Vulnerabilities
+title: Memory Corruption Vulnerabilities Overview
 date: 2023-08-26 04:20:00
-#categories: [TOP_CATEGORIE, SUB_CATEGORIE]
-#tags: [TAG]     # TAG names should always be lowercase
+categories: [Vulnerabilities, Memory Corruption]
+tags: [memory-corruption, buffer-overflow, c]     # TAG names should always be lowercase
+
 ---
 
 ## Integer Overflow

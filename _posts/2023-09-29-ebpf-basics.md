@@ -1,8 +1,8 @@
 ---
 title: Basics of eBPF
 date: 2023-09-29 04:20:00
-#categories: [TOP_CATEGORIE, SUB_CATEGORIE]
-#tags: [TAG]     # TAG names should always be lowercase
+categories: [OS Internals]
+tags: [ebpf, cpu]     # TAG names should always be lowercase
 ---
 
 ## eBPF Overview

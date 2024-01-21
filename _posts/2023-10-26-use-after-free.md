@@ -1,8 +1,8 @@
 ---
 title: Use-After-Free
 date: 2023-10-26 04:20:00
-#categories: [TOP_CATEGORIE, SUB_CATEGORIE]
-#tags: [TAG]     # TAG names should always be lowercase
+categories: [Vulnerabilities, Memory Corruption]
+tags: [memory-corruption, c]     # TAG names should always be lowercase
 ---
 
 ## What is Use-After-Free?

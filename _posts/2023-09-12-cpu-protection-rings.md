@@ -1,8 +1,8 @@
 ---
 title: CPU Protection Rings
 date: 2023-09-12 04:20:00
-#categories: [TOP_CATEGORIE, SUB_CATEGORIE]
-#tags: [TAG]     # TAG names should always be lowercase
+categories: [OS Internals]
+tags: [cpu]     # TAG names should always be lowercase
 ---
 
 Central Processing Unit (CPU) protection rings are a hierarchical model that computer systems use to manage different levels of access and permissions for software and processes. 

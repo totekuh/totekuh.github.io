@@ -1,8 +1,8 @@
 ---
 title: The GOT Overwrite Attack
 date: 2023-09-08 04:20:00
-#categories: [TOP_CATEGORIE, SUB_CATEGORIE]
-#tags: [TAG]     # TAG names should always be lowercase
+categories: [Vulnerabilities]
+tags: [reverse-engineering, got, function-hooking] 
 ---
 
 Modifying the Global Offset Table (GOT) is one of the common techniques to hook functions in Linux ELF binaries. 

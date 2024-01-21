@@ -40,9 +40,9 @@ social:
     # The first element serves as the copyright owner's link
     - https://twitter.com/retr092545999 # change to your twitter homepage
     - https://github.com/totekuh # change to your github homepage
+    - https://www.linkedin.com/in/username
     # Uncomment below to add more social links
     # - https://www.facebook.com/username
-    # - https://www.linkedin.com/in/username
 
 google_site_verification: # fill in to your verification string
 
