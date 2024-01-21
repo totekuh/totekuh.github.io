@@ -17,7 +17,7 @@ Instead of directly referencing essential Windows API functions in the malware's
 
 This process not only significantly complicates static analysis of the binary, it also provides a way to dynamically load any DLL into the process memory space by using the LoadLibraryA API from kernel32.dll and call any function from there.
 
-![Import By Hash](/assets/import-by-hash.jpg)
+![Import By Hash](/assets/img/import-by-hash.jpg)
 
 ## How It Works
 

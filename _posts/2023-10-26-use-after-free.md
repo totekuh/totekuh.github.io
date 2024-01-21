@@ -9,7 +9,7 @@ date: 2023-10-26 04:20:00
 
 Use-After-Free (UAF) is a memory corruption vulnerability that occurs when a program continues to use a pointer after it has been freed. In simpler terms, UAF vulnerabilities arise when an object is deleted (or "freed") in memory, but references to that object still exist and are later used.
 
-![Use-After-Free](/assets/use-after-free.jpg)
+![Use-After-Free](/assets/img/use-after-free.jpg)
 
 ## How Does It Happen?
 
