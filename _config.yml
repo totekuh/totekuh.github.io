@@ -41,7 +41,6 @@ social:
     # The first element serves as the copyright owner's link
     - https://twitter.com/retr092545999 # change to your twitter homepage
     - https://github.com/totekuh # change to your github homepage
-    - https://www.linkedin.com/in/username
     # Uncomment below to add more social links
     # - https://www.facebook.com/username
 
@@ -88,8 +87,9 @@ comments:
   giscus:
     repo: totekuh/totekuh.github.io
     repo_id: R_kgDOLHXnqQ
-    category: General
+    category: Comments
     category_id: DIC_kwDOLHXnqc4CclSt
+    theme: dark
     mapping: # optional, default to 'pathname'
     input_position: # optional, default to 'bottom'
     lang: # optional, default to the value of `site.lang`
