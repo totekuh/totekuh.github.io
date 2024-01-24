@@ -97,7 +97,7 @@ These measures collectively enhance security against the threats posed by egg hu
 
 ## Resources
 
-- **The Basics of Exploit Development 3: Egg Hunters**: https://www.coalfire.com/the-coalfire-blog/the-basics-of-exploit-development-3-egg-hunters
-- **Exploit writing tutorial part 8 : Win32 Egg Hunting**: https://www.corelan.be/index.php/2010/01/09/exploit-writing-tutorial-part-8-win32-egg-hunting/
-- **WoW64 Egghunter**: https://www.corelan.be/index.php/2011/11/18/wow64-egghunter/
-- **Windows Exploit Development – Part 5: Locating Shellcode With Egghunting**: https://www.securitysift.com/windows-exploit-development-part-5-locating-shellcode-egghunting/
+- **The Basics of Exploit Development 3: Egg Hunters**: [https://www.coalfire.com/the-coalfire-blog/the-basics-of-exploit-development-3-egg-hunters](https://www.coalfire.com/the-coalfire-blog/the-basics-of-exploit-development-3-egg-hunters)
+- **Exploit writing tutorial part 8 : Win32 Egg Hunting**: [https://www.corelan.be/index.php/2010/01/09/exploit-writing-tutorial-part-8-win32-egg-hunting/](https://www.corelan.be/index.php/2010/01/09/exploit-writing-tutorial-part-8-win32-egg-hunting/)
+- **WoW64 Egghunter**: [https://www.corelan.be/index.php/2011/11/18/wow64-egghunter/](https://www.corelan.be/index.php/2011/11/18/wow64-egghunter/)
+- **Windows Exploit Development – Part 5: Locating Shellcode With Egghunting**: [https://www.securitysift.com/windows-exploit-development-part-5-locating-shellcode-egghunting/](https://www.securitysift.com/windows-exploit-development-part-5-locating-shellcode-egghunting/)
