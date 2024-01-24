@@ -10,5 +10,7 @@ My penetration testing experience is wide-ranging, covering areas like automotiv
 
 I created this blog to put all my writings and/or posts in one place and I hope you'll find it useful.
 
-> Looking for the latest in cybersecurity? 🔗 Connect with us on [Telegram](https://t.me/cyberschmutz) to get frequent updates on the latest events, news, and toolsets in the domain.
+This blog is completely non-commercial. I provide all information free of charge, aiming to contribute to the cybersecurity community and support fellow enthusiasts and professionals in their strive for knowledge.
+
+> Looking for the latest in cybersecurity? 🔗 Connect with us on [Telegram](https://t.me/cyberschmutz) to get frequent updates on the latest events, news, and toolsets.
 {: .prompt-info }

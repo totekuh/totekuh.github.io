@@ -17,6 +17,8 @@ The classical ring architecture consists of four rings, numbered `0` through `3`
 
 These rings act as barriers or fences, making sure that less trusted code cannot easily compromise the integrity or security of the entire system.
 
+![CPU Protection Rings](/assets/img/cpu-protection-ring.png)
+
 ## Ring 0: Kernel Mode
 
 ### Features

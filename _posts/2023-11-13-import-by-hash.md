@@ -2,7 +2,7 @@
 title: Import By Hash
 date: 2023-11-13 04:20:00
 categories: [Attack Chain, Payload Execution]
-tags: [malware, buffer-overflow, windows]     # TAG names should always be lowercase
+tags: [malware, buffer-overflow, windows, exploit-development]     # TAG names should always be lowercase
 ---
 
 ## Introduction

@@ -1,7 +1,7 @@
 ---
 title: The GOT Overwrite Attack
 date: 2023-09-08 04:20:00
-categories: [Vulnerabilities]
+categories: [Attack Chain, Payload Execution]
 tags: [reverse-engineering, got, function-hooking] 
 ---
 
