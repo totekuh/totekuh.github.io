@@ -1,8 +1,8 @@
 ---
 title: ARM TrustZone
 date: 2023-09-26 04:20:00
-#categories: [TOP_CATEGORIE, SUB_CATEGORIE]
-#tags: [TAG]     # TAG names should always be lowercase
+categories: [OS Internals]
+tags: [arm, secureos, tee, cpu]     # TAG names should always be lowercase
 ---
 
 ## Introduction

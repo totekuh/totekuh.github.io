@@ -1,8 +1,8 @@
 ---
 title: Reverse Engineer Mindset
 date: 2023-08-29 04:20:00
-#categories: [TOP_CATEGORIE, SUB_CATEGORIE]
-#tags: [TAG]-  # TAG names should always be lowercase
+categories: [Mindset]
+tags: [reverse-engineering]  # TAG names should always be lowercase
 ---
 
 If you're diving into the world of reverse engineering, know that having the right mindset is just as important as the tech skills you'll need. 

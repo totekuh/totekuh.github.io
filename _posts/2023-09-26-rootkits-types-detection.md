@@ -1,8 +1,8 @@
 ---
 title: Rootkits Types & Detection
 date: 2023-09-26 04:20:00
-#categories: [TOP_CATEGORIE, SUB_CATEGORIE]
-#tags: [TAG]     # TAG names should always be lowercase
+categories: [Attack Chain, Persistence]
+tags: [malware, rootkit]     # TAG names should always be lowercase
 ---
 
 Let's delve deeper into each type of rootkit, exploring typical infection vectors and common detection methods.

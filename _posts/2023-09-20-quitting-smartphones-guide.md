@@ -1,8 +1,7 @@
 ---
 title: Quitting Smartphones Guide
 date: 2023-09-20 04:20:00
-#categories: [TOP_CATEGORIE, SUB_CATEGORIE]
-#tags: [TAG]     # TAG names should always be lowercase
+categories: [Mindset]
 ---
 
 Switching from a smartphone to a button phone is aimed at reducing unnecessary screen time, enhancing focus, and fostering a greater sense of presence at the moment. 

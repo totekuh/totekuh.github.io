@@ -1,8 +1,8 @@
 ---
 title: How APTs Target Vehicles
 date: 2023-09-12 04:20:00
-#categories: [TOP_CATEGORIE, SUB_CATEGORIE]
-#tags: [TAG]     # TAG names should always be lowercase
+categories: [Threat Intelligence]
+tags: [apt, automotive]     # TAG names should always be lowercase
 ---
 
 As we accelerate into the age of autonomous driving, the new paradigm isn't just about horsepower but also about data and connectivity. 

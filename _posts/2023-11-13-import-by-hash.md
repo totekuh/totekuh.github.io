@@ -1,21 +1,20 @@
 ---
 title: Import By Hash
 date: 2023-11-13 04:20:00
-#categories: [TOP_CATEGORIE, SUB_CATEGORIE]
-#tags: [TAG]     # TAG names should always be lowercase
+categories: [Attack Chain, Payload Execution]
+tags: [malware, buffer-overflow, windows, exploit-development]     # TAG names should always be lowercase
 ---
 
 ## Introduction
 
-Adversaries continually develop methods to evade detection. 
-
+Adversaries continually develop methods to evade detection.
 One such advanced technique is the "Import by Hash" method, primarily used in crafting stealthy malware.
 
-This technique is a form of obfuscation. 
+This technique is more a form of obfuscation. 
 
-Instead of directly referencing essential Windows API functions in the malware's code, which makes them easily identifiable, the Import by Hash method dynamically resolves these functions at runtime using unique hashes. 
+Instead of directly referencing essential Windows API functions in the malware's code, which makes them easily identifiable, the Import by Hash method dynamically resolves these functions at runtime using unique hashes.
 
-This process not only significantly complicates static analysis of the binary, it also provides a way to dynamically load any DLL into the process memory space by using the LoadLibraryA API from kernel32.dll and call any function from there.
+This process not only significantly complicates static analysis of the binary, it also provides a way to dynamically load any DLL into the process memory space by using the `LoadLibraryA` API from `kernel32.dll` and call any function from there.
 
 ![Import By Hash](/assets/img/import-by-hash.jpg)
 

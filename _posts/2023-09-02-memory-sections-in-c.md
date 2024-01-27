@@ -1,8 +1,8 @@
 ---
 title: Memory Sections in C
 date: 2023-09-02 04:20:00
-#categories: [TOP_CATEGORIE, SUB_CATEGORIE]
-#tags: [TAG]     # TAG names should always be lowercase
+categories: [OS Internals]
+tags: [c]     # TAG names should always be lowercase
 ---
 
 ## Introduction
