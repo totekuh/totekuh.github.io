@@ -1,0 +1,12 @@
+.git
+.github
+.bundle
+.jekyll-cache
+.idea
+.vscode
+_site
+vendor
+node_modules
+tmp
+*.gem
+README.md

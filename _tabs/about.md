@@ -4,13 +4,9 @@ icon: fas fa-info-circle
 order: 4
 ---
 
-Hi! I work as a penetration tester with the focus on low level security research.
+cyberschmutz is a technical blog covering reverse engineering, embedded targets, operating-system internals, and offensive security research.
 
-My penetration testing experience is wide-ranging, covering areas like automotive embedded systems, IoT, hardware pentesting and reverse engineering as well as web, network and SE.
+This blog is completely free of charge and exists to help others learn and grow in offensive cybersecurity.
 
-I created this blog to put all my writings and/or posts in one place and I hope you'll find it useful.
-
-This blog is completely non-commercial. I provide all information free of charge, aiming to contribute to the cybersecurity community and support fellow enthusiasts and professionals in their strive for knowledge.
-
-> Looking for the latest in cybersecurity? 🔗 Connect with us on [Telegram](https://t.me/cyberschmutz) to get frequent updates on the latest events, news, and toolsets.
+> Updates and new posts: [@cyberschmutz on Telegram](https://t.me/cyberschmutz).
 {: .prompt-info }

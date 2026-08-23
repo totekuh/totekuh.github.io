@@ -1,56 +1,46 @@
-# Chirpy Starter
+# cyberschmutz
 
-[![Gem Version](https://img.shields.io/gem/v/jekyll-theme-chirpy)][gem]&nbsp;
-[![GitHub license](https://img.shields.io/github/license/cotes2020/chirpy-starter.svg?color=blue)][mit]
+Technical notes on reverse engineering, operating-system internals, embedded security, and offensive tradecraft. The site is a [Jekyll](https://jekyllrb.com/) blog using the Chirpy theme.
 
-When installing the [**Chirpy**][chirpy] theme through [RubyGems.org][gem], Jekyll can only read files in the folders
-`_data`, `_layouts`, `_includes`, `_sass` and `assets`, as well as a small part of options of the `_config.yml` file
-from the theme's gem. If you have ever installed this theme gem, you can use the command
-`bundle info --path jekyll-theme-chirpy` to locate these files.
+## Quick start
 
-The Jekyll team claims that this is to leave the ball in the user’s court, but this also results in users not being
-able to enjoy the out-of-the-box experience when using feature-rich themes.
+The Docker path needs only Docker Compose:
 
-To fully use all the features of **Chirpy**, you need to copy the other critical files from the theme's gem to your
-Jekyll site. The following is a list of targets:
-
-```shell
-.
-├── _config.yml
-├── _plugins
-├── _tabs
-└── index.html
+```sh
+make deploy
 ```
 
-To save you time, and also in case you lose some files while copying, we extract those files/configurations of the
-latest version of the **Chirpy** theme and the [CD][CD] workflow to here, so that you can start writing in minutes.
+The production site is served at <http://localhost:8080>. Use `PORT=9090 make deploy` to change the host port.
 
-## Prerequisites
+For an editable development server with live reload:
 
-Follow the instructions in the [Jekyll Docs](https://jekyllrb.com/docs/installation/) to complete the installation of
-the basic environment. [Git](https://git-scm.com/) also needs to be installed.
-
-## Installation
-
-Sign in to GitHub and [**use this template**][use-template] to generate a brand new repository and name it
-`USERNAME.github.io`, where `USERNAME` represents your GitHub username.
-
-Then clone it to your local machine and run:
-
-```console
-$ bundle
+```sh
+make docker-serve
 ```
 
-## Usage
+It serves on <http://localhost:4000>; the livereload socket is exposed on port `35729`.
 
-Please see the [theme's docs](https://github.com/cotes2020/jekyll-theme-chirpy#documentation).
+## Commands
+
+Run `make help` for the complete, self-documenting command list. The usual targets are:
+
+```sh
+make build          # build _site locally
+make check          # build and validate local HTML
+make docker-build   # build the lean Nginx production image
+make docker-check   # build and validate entirely in Docker
+make deploy         # validate, build, and start the production container
+make docker-down    # stop the local deployment
+```
+
+Local Ruby commands require a current Ruby and Bundler. Run `make install` once before `make serve`, `make build`, or `make check`.
+
+## Deployment model
+
+`Dockerfile` is a multi-stage build: Ruby/Jekyll generates the static site, then a small Nginx image serves only that output on port 8080. `compose.yaml` supplies the production service and an opt-in `blog` development service. The production container is read-only except for Nginx runtime scratch directories and has a health endpoint at `/healthz`.
+
+GitHub Pages deployment remains in [`.github/workflows/pages-deploy.yml`](.github/workflows/pages-deploy.yml).
 
 ## License
 
-This work is published under [MIT][mit] License.
-
-[gem]: https://rubygems.org/gems/jekyll-theme-chirpy
-[chirpy]: https://github.com/cotes2020/jekyll-theme-chirpy/
-[use-template]: https://github.com/cotes2020/chirpy-starter/generate
-[CD]: https://en.wikipedia.org/wiki/Continuous_deployment
-[mit]: https://github.com/cotes2020/chirpy-starter/blob/master/LICENSE
+MIT. See [LICENSE](LICENSE).

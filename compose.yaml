@@ -1,0 +1,33 @@
+name: cyberschmutz
+
+services:
+  site:
+    build:
+      context: .
+      target: runtime
+    image: ${IMAGE_NAME:-cyberschmutz}:latest
+    ports:
+      - "${PORT:-8080}:8080"
+    restart: unless-stopped
+    init: true
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+      - /tmp
+
+  blog:
+    profiles: [dev]
+    build:
+      context: .
+      target: builder
+    command: >-
+      bundle exec jekyll serve --livereload --host 0.0.0.0
+      --port 4000 --livereload-port 35729 --force_polling
+    environment:
+      JEKYLL_ENV: development
+    ports:
+      - "${SITE_PORT:-4000}:4000"
+      - "${LIVERELOAD_PORT:-35729}:35729"
+    volumes:
+      - .:/site

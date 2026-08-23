@@ -20,3 +20,7 @@ package-lock.json
 
 # Misc
 assets/js/dist
+
+# Local Docker and Jekyll scratch data
+.docker
+tmp
