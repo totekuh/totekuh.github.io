@@ -115,11 +115,16 @@ WARNING: One or more files failed to extract: either no utility was found or it'
 witchtape@kraken:~/archer-251031$ cd _Archer_C20_EU_V6_251031.bin.extracted
 witchtape@kraken:~/archer-251031/_Archer_C20_EU_V6_251031.bin.extracted$ ls
  squashfs-root   squashfs-root-0   squashfs-root-1   160200.squashfs   20400   20400.7z
-witchtape@kraken:~/archer-251031/_Archer_C20_EU_V6_251031.bin.extracted$
+witchtape@kraken:~/archer-251031/_Archer_C20_EU_V6_251031.bin.extracted$ ls squashfs-root
+ bin   dev   etc   lib   mnt   proc   sbin   sys   usr   var   web   linuxrc
 ```
 
 ## Targeting the Web Interface
 
 The web interface was the obvious first target because it exposed the largest authenticated attack surface.
 
-To understand how it worked, we needed to trace the web interface's lifecycle: from the processes started at boot to the backend code handling each request.
+We began with a simple search for HTTP-related files in the extracted root filesystem. The results gave us one obvious candidate for the web service: `usr/bin/httpd`.
+
+![Searching the extracted root filesystem for HTTP-related files and preserving the httpd binary for analysis](/assets/img/archer-httpd-triage.png)
+
+Before reversing it, we copied `httpd` into a dedicated working directory and recorded its SHA-256: `0169bcd6a77229793d11f601ce28b45c805325afe346895374a50fc9bfef15356b`.
