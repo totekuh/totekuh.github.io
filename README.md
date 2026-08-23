@@ -15,10 +15,13 @@ The production site is served at <http://localhost:8080>. Use `PORT=9090 make de
 For an editable development server with live reload:
 
 ```sh
-make docker-serve
+make watch
 ```
 
-It serves on <http://localhost:4000>; the livereload socket is exposed on port `35729`.
+It serves on <http://localhost:4000>; changes to posts, configuration, and
+assets are rebuilt automatically. The livereload socket is exposed on port
+`35729`. Use `make watch-logs` to follow it, or `make docker-serve` to run the
+preview in the foreground.
 
 ## Commands
 

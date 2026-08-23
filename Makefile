@@ -6,7 +6,7 @@ PORT ?= 8080
 SITE_PORT ?= 4000
 LIVERELOAD_PORT ?= 35729
 
-.PHONY: help install serve build check clean docker-build docker-check docker-up docker-down docker-logs docker-serve deploy
+.PHONY: help install serve build check clean docker-build docker-check docker-up docker-down docker-logs docker-serve watch watch-logs deploy
 
 help: ## Show available targets.
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage: make <target> [VARIABLE=value]\n\nTargets:\n"} /^[a-zA-Z0-9_-]+:.*##/ { printf "  %-16s %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
@@ -44,6 +44,12 @@ docker-logs: ## Follow production container logs.
 
 docker-serve: ## Run Jekyll in Docker with live reload.
 	SITE_PORT=$(SITE_PORT) LIVERELOAD_PORT=$(LIVERELOAD_PORT) docker compose --profile dev up --build blog
+
+watch: ## Start an auto-updating Jekyll preview on SITE_PORT (default: 4000).
+	SITE_PORT=$(SITE_PORT) LIVERELOAD_PORT=$(LIVERELOAD_PORT) docker compose --profile dev up --build --detach blog
+
+watch-logs: ## Follow logs for the auto-updating preview.
+	docker compose logs --follow --tail=100 blog
 
 deploy: docker-check docker-up ## Validate, build, and launch the Docker deployment.
 	@printf "Deployment is live at http://localhost:%s\n" "$(PORT)"
