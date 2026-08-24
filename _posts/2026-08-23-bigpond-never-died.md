@@ -347,3 +347,270 @@ We then searched the extracted library directory for a library exporting either 
 We copied the matching library into the working directory and bulk-decompiled it for the next pass:
 
 ![Copying and bulk-decompiling libcmm.so](/assets/img/archer-libcmm-decomp.png)
+
+### Entering the Configuration Manager
+
+The HTTP server handed the request to `rdp_setObj()`, so that was the first `libcmm` export to inspect:
+
+```bash
+witchtape@kraken:~/archer-251031$ fd -t f -g '*rdp_setObj.c' re/libcmm-decomp/functions
+re/libcmm-decomp/functions/0002514c_9808a16fdd766c532760b34f_rdp_setObj.c
+```
+
+The raw Ghidra export remains the source of record. Rather than edit it by hand, we added a tiny wrapper that asks Codex for a separate review copy while keeping the model read-only:
+
+```python
+#!/usr/bin/env python3
+"""Write a Codex-assisted review copy of one Ghidra decompilation."""
+
+from __future__ import annotations
+
+import argparse
+import shlex
+import subprocess
+from pathlib import Path
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Rewrite a Ghidra C export as a separate readable review copy."
+    )
+    parser.add_argument("source", type=Path, help="Ghidra-generated .c file")
+    parser.add_argument("-o", "--output", required=True, type=Path, help="review-copy path")
+    parser.add_argument("--force", action="store_true", help="replace an existing output file")
+    args = parser.parse_args()
+
+    source = args.source.resolve()
+    output = args.output.resolve()
+
+    if not source.is_file():
+        parser.error(f"source is not a file: {source}")
+    if source == output:
+        parser.error("output must be a separate review copy")
+    if output.exists() and not args.force:
+        parser.error(f"output exists: {output} (pass --force to replace it)")
+    if not output.parent.is_dir():
+        parser.error(f"output directory does not exist: {output.parent}")
+
+    prompt = (
+        f"Read only {source.name}.\n"
+        "Rewrite it as clean C-like pseudocode. Preserve logic, constants, and calls; "
+        "add brief comments; output code only."
+    )
+    command = [
+        "codex",
+        "exec",
+        "-C",
+        str(source.parent),
+        "--sandbox",
+        "read-only",
+        "--skip-git-repo-check",
+        "--ignore-user-config",
+        "--ignore-rules",
+        "--ephemeral",
+        "-o",
+        str(output),
+        prompt,
+    ]
+
+    print("+", shlex.join(command))
+    subprocess.run(command, check=True)
+
+
+if __name__ == "__main__":
+    main()
+```
+
+We invoke it as follows:
+```bash
+witchtape@kraken:~/archer-251031$ python3 re/beautify_decomp.py \
+  re/libcmm-decomp/functions/0002514c_9808a16fdd766c532760b34f_rdp_setObj.c \
+  -o re/rdp_setObj.clean.c
+```
+
+The generated review copy sits beside the untouched Ghidra output. It does not add evidence; it makes the same control flow readable enough to review without losing the original:
+
+![Codex-assisted review copy of rdp_setObj beside the raw Ghidra decompilation](/assets/img/archer-rdp-setobj-clean-vs-raw.png)
+
+`rdp_setObj()` is still generic machinery. The next function worth opening is `rsl_setObj()`: it receives the resolved OID and completed object, so it should show how `libcmm` dispatches a configuration object to its actual implementation.
+
+We beautify the next target:
+```bash
+witchtape@kraken:~/archer-251031$ python3 re/beautify_decomp.py \
+    re/libcmm-decomp/functions/*rsl_setObj.c \
+    -o re/rsl_setObj.clean.c
+```
+
+The cleaned view made that dispatch explicit. `rsl_setObj()` masks the object identifier to 16 bits, uses it to index `g_rsl_objFuncTable`, and invokes that entry's `setObj` function pointer. Only after the object-specific setter succeeds does it call `dm_setObj()` and queue deferred work:
+
+![Cleaned rsl_setObj beside the raw Ghidra output](/assets/img/archer-rsl-setobj-clean-vs-raw.png)
+
+We had reached the table boundary. The next job was to resolve the `WAN_IP_CONN` string to its numeric OID, then use that OID to identify the corresponding `setObj` entry.
+
+### Finding the OID Table
+
+The web frontend gave us the object name, `WAN_IP_CONN`; `rsl_setObj()` showed that the backend dispatches by a numeric OID. The resolver tells us where those two representations meet, but not how the table is laid out. We first needed to locate `g_oidStringTable` itself:
+
+```bash
+witchtape@kraken:~/archer-251031$ python3 re/beautify_decomp.py \
+  re/libcmm-decomp/functions/*rsl_getOidByStr.c \
+  -o re/rsl_getOidByStr.clean.c
+
+witchtape@kraken:~/archer-251031$ rich re/rsl_getOidByStr.clean.c
+```
+
+There is no hash or parser hiding here. The resolver walks `g_oidStringTable` from OID `1` through `265`, compares each string exactly, and returns the matching index:
+
+![Cleaned rsl_getOidByStr beside the raw Ghidra output](/assets/img/archer-rsl-getoid-clean-vs-raw.png)
+
+The next step was to find the table data in the exported symbols and inspect its entries:
+
+```bash
+witchtape@kraken:~/archer-251031$ readelf -Ws re/libcmm.so | rg 'g_oidStringTable$'
+   760: 000f1800  1064 OBJECT  GLOBAL DEFAULT   17 g_oidStringTable
+```
+
+The table begins at `0x000f1800` in the ELF and spans `0x428` bytes, ending at `0x000f1c28`. To translate that virtual address into a file offset, we checked the section that contains it:
+
+```bash
+witchtape@kraken:~/archer-251031$ readelf -W -S re/libcmm.so | rg ' \.data\s'
+  [17] .data             PROGBITS        000ef080 0df080 0041a0 00  WA  0   0 16
+```
+
+`.data` begins at virtual address `0x000ef080` and file offset `0x000df080`, a delta of `0x10000`. Therefore the table's file offset is `0x000df080 + (0x000f1800 - 0x000ef080) = 0x000e1800`.
+
+It contains little-endian 32-bit pointers, so we rendered one decoded word per line and numbered the entries from zero:
+
+![Indexed g_oidStringTable pointer dump](/assets/img/archer-oid-string-table-dump.png)
+
+To identify the relevant table entry, we first recovered the address of the target string from the library:
+
+```bash
+witchtape@kraken:~/archer-251031$ strings -a -t x re/libcmm.so | rg ' WAN_IP_CONN$'
+  cbcf4 WAN_IP_CONN
+```
+
+We could then search that address, padded to an eight-digit word, in the indexed table. The matching row would be the `WAN_IP_CONN` OID and the bridge to its setter:
+
+```bash
+witchtape@kraken:~/archer-251031$ xxd -e -g4 -c4 -s $((0xe1800)) -l 0x428 re/libcmm.so |
+  nl -v0 -ba |
+  rg '000cbcf4'
+```
+
+The match lands on row `97`, giving `WAN_IP_CONN` the OID `97` (`0x61`):
+
+![WAN_IP_CONN found at OID 97 in g_oidStringTable](/assets/img/archer-wan-ip-conn-oid.png)
+
+We could now use that OID to inspect entry `97` in `g_rsl_objFuncTable` and identify the object-specific setter.
+
+### Finding the Object Dispatch Table
+
+We first located the table that `rsl_setObj()` indexes for its callback:
+
+```bash
+witchtape@kraken:~/archer-251031$ readelf -Ws re/libcmm.so | rg 'g_rsl_objFuncTable$'
+   924: 000ee6bc  2128 OBJECT  GLOBAL DEFAULT   16 g_rsl_objFuncTable
+```
+
+The record size comes directly from `rsl_setObj()`'s table access: `g_rsl_objFuncTable + obj * 8 + 4`. The multiplication gives an eight-byte stride; the `+ 4` selects the second 32-bit word. The symbol's `0x850`-byte size therefore gives `0x850 / 8 = 266` records. OID `97`'s setter slot is `0x000ee6bc + 97 * 8 + 4 = 0x000ee9c8`.
+
+Before reading that slot from disk, we mapped its containing section from virtual address to file offset:
+
+```bash
+witchtape@kraken:~/archer-251031$ readelf -W -S re/libcmm.so | rg ' \.data\.rel\.ro\s'
+  [16] .data.rel.ro      PROGBITS        000ee014 0de014 001064 00  WA  0   0  4
+```
+
+The same `0x10000` delta applies here. The full OID `97` record starts at virtual address `0x000ee9c4`, which maps to file offset `0x000de9c4`; the setter is its second word at `0x000de9c8`. We dumped both words together:
+
+```bash
+witchtape@kraken:~/archer-251031$ xxd -e -g4 -c4 -s $((0xde9c4)) -l 8 re/libcmm.so
+000de9c4: 00000000  ....
+000de9c8: 00000000  ....
+```
+
+Both words are zero in the on-disk image, but this is a dynamically linked shared object. The next question was whether ELF relocations fix up those slots when `libcmm.so` is loaded. We queried the relocation entries for the exact record:
+
+```bash
+witchtape@kraken:~/archer-251031$ readelf -r re/libcmm.so |
+  rg '000ee9c4|000ee9c8'
+```
+
+The relocations resolve both words of OID `97`'s record: its getter is `rsl_getWanIpConnObj`, and its setter is `rsl_setWanIpConnObj` at `0x00047e48`.
+
+![Relocations resolving the WAN_IP_CONN getter and setter](/assets/img/archer-wan-ip-conn-relocations.png)
+
+We had reached the object-specific setter. The next step was to locate its decompiled source:
+
+```bash
+witchtape@kraken:~/archer-251031$ fd -t f -g '*rsl_setWanIpConnObj.c' re/libcmm-decomp/functions
+re/libcmm-decomp/functions/00057e48_e12f99bbee691d7b477cc3ed_rsl_setWanIpConnObj.c
+```
+
+### Reading the WAN Setter
+
+This was the first object-specific code on the traced path, so we generated a separate review copy before reading it:
+
+```bash
+witchtape@kraken:~/archer-251031$ python3 re/beautify_decomp.py \
+  re/libcmm-decomp/functions/00057e48_e12f99bbee691d7b477cc3ed_rsl_setWanIpConnObj.c \
+  -o re/rsl_setWanIpConnObj.clean.c
+```
+
+The setter first derives the WAN access mode and connection type from the submitted object:
+
+![WAN setter deriving the access mode and connection type](/assets/img/archer-wan-setter-connection-type.png)
+
+It then passes the object and both values into a downstream handler:
+
+![WAN setter passing the object and connection type to its handler](/assets/img/archer-wan-setter-handler-call.png)
+
+The handler is selected by the requested operation, not by the connection type. For the `ACT_SET` operation (`2`), the setter chooses `wan_conn_wanIpConn_handleSetOpt`; the BigPond connection type remains an argument passed to that routine.
+
+```bash
+witchtape@kraken:~/archer-251031$ rg -n -F -C 12 'case 2:' \
+    re/rsl_setWanIpConnObj.clean.c
+159-
+160-    rsl_dhcpc_addHostnamePrefix(newObj);
+161-    rsl_dhcpc_escapeHostname(newObj + 0x7f, 0x3f);
+162-
+163-    switch (operation) {
+164-    case 3:
+165-        printf(STR_BASE + 0x1ba0, STR_BASE - 0x3bf8, 0x2dc);
+166-        printf(STR_BASE + 0x32ec);
+167-        fputc('\n', stdout);
+168-        handler = wan_conn_wanIpConn_handleAddOpt;
+169-        break;
+170-
+171:    case 2:
+172-        printf(STR_BASE + 0x1ba0, STR_BASE - 0x3bf8, 0x2e4);
+173-        printf(STR_BASE + 0x3314);
+174-        fputc('\n', stdout);
+175-        handler = wan_conn_wanIpConn_handleSetOpt;
+176-        break;
+177-
+178-    case 4:
+179-        printf(STR_BASE + 0x1ba0, STR_BASE - 0x3bf8, 0x2e9);
+180-        printf(STR_BASE + 0x333c);
+181-        fputc('\n', stdout);
+182-        handler = wan_conn_wanIpConn_handleDelOpt;
+183-        break;
+```
+
+We located that set handler and prepared it for review:
+
+```bash
+witchtape@kraken:~/archer-251031$ fd -t f -g '*wanIpConn_handleSetOpt.c'
+re/libcmm-decomp/functions/0004ff88_4749a70b4f0edadd9e342322_wan_conn_wanIpConn_handleSetOpt.c
+
+witchtape@kraken:~/archer-251031$ python3 re/beautify_decomp.py \
+    re/libcmm-decomp/functions/0004ff88_4749a70b4f0edadd9e342322_wan_conn_wanIpConn_handleSetOpt.c \
+    -o re/wanIpConn_handleSetOpt.clean.c
+```
+
+This was not the BPA-specific code we were looking for. The handler is shared WAN lifecycle machinery: it begins by asking `wan_conn_wanIpConn_getConnectionInfo()` to derive connection state, then validates and applies the configuration.
+
+![The shared WAN set handler entering connection-state lookup](/assets/img/archer-wan-set-handler-generic.png)
+
+Rather than follow its generic bring-up logic, we followed that first helper and the `wanType` argument it receives.
