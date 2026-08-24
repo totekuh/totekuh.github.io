@@ -613,4 +613,69 @@ This was not the BPA-specific code we were looking for. The handler is shared WA
 
 ![The shared WAN set handler entering connection-state lookup](/assets/img/archer-wan-set-handler-generic.png)
 
-Rather than follow its generic bring-up logic, we followed that first helper and the `wanType` argument it receives.
+### Dispatching the Connection Type
+
+When an updated configuration requires an IPv4 restart, this handler passes the selected connection type to `wan_conn_wanIpConn_connect_v4()`:
+
+![The shared WAN handler passing the connection type into the IPv4 bring-up routine](/assets/img/archer-wan-set-handler-connect-v4.png)
+
+That function is where the generic path stops: it uses the connection type to select a callback from a table. We generated a review copy and searched it for that dispatch:
+
+```bash
+witchtape@kraken:~/archer-251031$ fd -t f -g '*wanIpConn_connect_v4.c' \
+  re/libcmm-decomp/functions
+re/libcmm-decomp/functions/0004dc94_7d75c205e8a62727b1267d94_wan_conn_wanIpConn_connect_v4.c
+
+witchtape@kraken:~/archer-251031$ python3 re/beautify_decomp.py \
+  re/libcmm-decomp/functions/0004dc94_7d75c205e8a62727b1267d94_wan_conn_wanIpConn_connect_v4.c \
+  -o re/wanIpConn_connect_v4.clean.c
+```
+
+The routine selects a function pointer at `g_wan_connFuncTable + connection_type * 0x0c + 4`: twelve-byte records, with the connection callback as the second word.
+
+![The IPv4 bring-up routine selecting its connection callback](/assets/img/archer-wan-connection-dispatch.png)
+
+The table lookup is the next boundary to resolve: its BPA record will identify the connection callback that starts the legacy path.
+
+### Resolving the BPA Callback
+
+`connect_v4()` already told us the layout: for connection type `n`, it calls the pointer at `table + n * 0x0c + 4`. We located that table next. Its `0x90`-byte size gives twelve `0x0c`-byte records:
+
+```bash
+witchtape@kraken:~/archer-251031$ readelf -Ws re/libcmm.so | rg 'g_wan_connFuncTable$'
+   700: 000eef0c   144 OBJECT  GLOBAL DEFAULT   16 g_wan_connFuncTable
+```
+
+The table tells us its shape, not which record represents BigPond. We searched the exported function names recovered by the decompilation for BPA-specific callbacks:
+
+```bash
+witchtape@kraken:~/archer-251031$ rg -n -i -C 1 'wan_conn_bpa(Filter|Conn|Disconn)' \
+  re/libcmm-decomp/exports.json
+3898-    "is_primary": true,
+3899:    "name": "wan_conn_bpaFilter",
+3900-    "namespace": "Global"
+--
+3904-    "is_primary": true,
+3905:    "name": "wan_conn_bpaConn",
+3906-    "namespace": "Global"
+--
+3910-    "is_primary": true,
+3911:    "name": "wan_conn_bpaDisconn",
+3912-    "namespace": "Global"
+```
+
+The on-disk table is populated through dynamic relocations, so we used those discovered names to find their slots. Read by address, `0x000eef84`, `0x000eef88`, and `0x000eef8c` are three consecutive four-byte words—the filter, connect, and disconnect slots of one twelve-byte record:
+
+```bash
+witchtape@kraken:~/archer-251031$ readelf -r re/libcmm.so |
+  rg 'wan_conn_bpa(Filter|Conn|Disconn)'
+000eef84  00055103 R_MIPS_REL32      000727d0   wan_conn_bpaFilter
+000eef88  00057803 R_MIPS_REL32      000727d8   wan_conn_bpaConn
+000eef8c  0004b103 R_MIPS_REL32      00072894   wan_conn_bpaDisconn
+```
+
+![Relocations resolving the BPA connection callbacks](/assets/img/archer-bpa-connection-relocations.png)
+
+Its first word is `0x000eef84`. Subtracting the table base gives `0x78`; `0x78 / 0x0c = 10`, so BigPond is connection type `10`. Plugging that back into the dispatch expression gives `0x000eef0c + 10 * 0x0c + 4 = 0x000eef88`—the relocation that resolves to `wan_conn_bpaConn()`.
+
+We had finally crossed from shared WAN code into the BPA-specific implementation.
