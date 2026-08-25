@@ -1,14 +1,17 @@
 ---
-title: "BigPond Never Died: Root RCE in TP-Link's Legacy WAN Stack"
+title: "BigPond Never Died: Authenticated Command Injection to Root in TP-Link's Legacy WAN Stack"
 date: 2026-08-23 19:50:00 +0200
 categories: [Vulnerability Research, Embedded Systems]
 tags: [tp-link, firmware, command-injection, bigpond, embedded-linux]
 description: "An obsolete ISP feature remained in Archer C20 v6 firmware and let BPA configuration reach a root shell through system()."
+image: /assets/img/archer-c20-v6-router.png
 ---
 
 We bought an ordinary consumer router - a TP-Link Archer C20 v6 - and took it apart to look for bugs we could exploit. Nothing exotic: the kind of cheap box people put behind an ISP connection and forget about.
 
 The plan was simple: inspect the firmware, map the exposed attack surface, and see what the vendor had left behind.
+
+> **Disclosure note:** We reported this issue to TP-Link Product Security on 14 June 2026. TP-Link released fixed firmware and [published its advisory](https://www.tp-link.com/en/support/faq/5252/) on 19 August 2026; this write-up follows public remediation.
 
 ![TP-Link Archer C20 v6](/assets/img/archer-c20-v6-router.png)
 
@@ -264,7 +267,7 @@ This run shows the whole chain: refused port, authenticated configuration update
 
 We confirmed the vulnerability on the TP-Link Archer C20 v6 running firmware Build 251031 (the latest available at the time of testing). The vulnerable `libcmm.so` library is shared across multiple Archer models; other devices carrying the same BPA code path in `oal_wan_initBpa()` may also be affected, but we did not test additional hardware.
 
-TP-Link released a patched firmware (Build 260811) on 2026-08-10.
+TP-Link's [advisory](https://www.tp-link.com/en/support/faq/5252/) lists the EU fix as Build 260811. The US and RU fixes start at Build 260812. We tested only the EU build.
 
 ## Disclosure Timeline
 
