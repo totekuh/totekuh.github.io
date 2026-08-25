@@ -4,7 +4,7 @@ date: 2026-08-23 19:50:00 +0200
 categories: [Vulnerability Research, Embedded Systems]
 tags: [tp-link, firmware, command-injection, bigpond, embedded-linux]
 description: "An obsolete ISP feature remained in Archer C20 v6 firmware and let BPA configuration reach a root shell through system()."
-image: https://totekuh.github.io/assets/img/archer-c20-v6-router.png
+social_preview_image: https://totekuh.github.io/assets/img/archer-c20-v6-router.png
 ---
 
 We bought an ordinary consumer router - a TP-Link Archer C20 v6 - and took it apart to look for bugs we could exploit. Nothing exotic: the kind of cheap box people put behind an ISP connection and forget about.

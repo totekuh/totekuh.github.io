@@ -22,18 +22,27 @@
       {% assign seo_tags = seo_tags | replace: old_url, new_url %}
     {% endunless %}
 
-  {% elsif site.social_preview_image %}
+  {% elsif page.social_preview_image or site.social_preview_image %}
+    {% assign src = page.social_preview_image | default: site.social_preview_image %}
+
     {%- capture img_url -%}
-      {% include img-url.html src=site.social_preview_image %}
+      {% include img-url.html src=src absolute=true %}
     {%- endcapture -%}
 
     {%- capture og_image -%}
       <meta property="og:image" content="{{ img_url }}" />
+      {% if page.social_preview_image %}
+        <meta name="twitter:image" content="{{ img_url }}" />
+      {% endif %}
     {%- endcapture -%}
 
     {% assign old_meta_clip = '<meta name="twitter:card"' %}
     {% assign new_meta_clip = og_image | append: old_meta_clip %}
     {% assign seo_tags = seo_tags | replace: old_meta_clip, new_meta_clip %}
+
+    {% if page.social_preview_image %}
+      {% assign seo_tags = seo_tags | replace: 'name="twitter:card" content="summary"', 'name="twitter:card" content="summary_large_image"' %}
+    {% endif %}
   {% endif %}
 
   {{ seo_tags }}
