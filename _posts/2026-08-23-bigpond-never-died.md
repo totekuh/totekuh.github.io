@@ -45,7 +45,7 @@ witchtape@kraken:~/archer-251031$ sha256sum Archer_C20_EU_V6_251031.bin
 
 ## Opening the Firmware
 
-`file` identifies the image only as raw data, which is normal for vendor firmware. `binwalk` showed an LZMA kernel at `0x20400` and an XZ SquashFS filesystem at `0x160200`.
+`file` identifies the image only as raw data, which is normal for vendor firmware.
 
 ![Binwalk locating the bootloader, kernel, and SquashFS root filesystem](/assets/img/archer-binwalk-layout.png)
 
