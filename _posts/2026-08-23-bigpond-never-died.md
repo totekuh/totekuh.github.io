@@ -234,7 +234,7 @@ Before choosing a proof payload, we checked the extracted filesystem for a usabl
 
 ![Finding the bundled telnetd binary in the extracted root filesystem](/assets/img/archer-telnetd-discovery.png)
 
-We used the panel itself to submit the configuration. First, we used a harmless `;;;` probe to check the configuration validator's handling of shell separators:
+We used the panel itself to submit the configuration. First, we used a harmless `;:;` probe to check the configuration validator's handling of shell separators:
 
 ![Probing the BPA username field with shell separators](/assets/img/archer-bpa-semicolon-probe.png)
 
